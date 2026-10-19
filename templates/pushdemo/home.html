@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172554">
+  <meta name="description" content="Минимальный пример PWA и Web Push на Django">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/app.css">
+  <title>PWA Push Demo</title>
+</head>
+<body class="page">
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">P</span><span>PWA Push Demo</span></a>
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button class="button quiet" type="submit">Выйти</button>
+    </form>
+  </header>
+
+  <main class="content">
+    <section class="hero">
+      <p class="eyebrow">DJANGO · WEB PUSH · PWA</p>
+      <h1>Проверка push-уведомлений</h1>
+      <p class="muted">Включи уведомления на этом устройстве, затем отправь тестовое сообщение с сервера.</p>
+      <div class="status-line"><span class="status-dot"></span> Пользователь: <strong>{{ request.user.username }}</strong></div>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading">
+        <div>
+          <h2>1. Подписка устройства</h2>
+          <p class="muted">Подписок для этого аккаунта: <strong id="subscription-count">{{ subscription_count }}</strong></p>
+        </div>
+        <span class="step">01</span>
+      </div>
+      <div class="actions">
+        <button class="button primary" id="subscribe-button" type="button">Включить push-уведомления</button>
+        <button class="button secondary" id="unsubscribe-button" type="button">Отключить на этом устройстве</button>
+      </div>
+      <p class="help">Браузер покажет запрос разрешения. Выбери «Разрешить».</p>
+    </section>
+
+    <section class="panel">
+      <div class="section-heading">
+        <div>
+          <h2>2. Отправка теста</h2>
+          <p class="muted">Сообщение будет отправлено на подписки текущего аккаунта.</p>
+        </div>
+        <span class="step">02</span>
+      </div>
+      <form id="push-form">
+        <label for="push-title">Заголовок</label>
+        <input id="push-title" name="title" maxlength="100" value="Новый тестовый заказ" required>
+        <label for="push-body">Текст уведомления</label>
+        <textarea id="push-body" name="body" rows="3" maxlength="500" required>Проверка: Web Push работает на этом устройстве.</textarea>
+        <button class="button primary full" type="submit">Отправить тестовый push</button>
+      </form>
+    </section>
+
+    <section class="panel subtle-panel">
+      <h2>3. Что проверить</h2>
+      <ul class="checklist">
+        <li>Разрешение уведомлений включено для сайта.</li>
+        <li>После подписки число устройств увеличилось.</li>
+        <li>Тестовое уведомление появляется, когда вкладка свёрнута.</li>
+        <li>Нажатие на уведомление открывает сайт.</li>
+      </ul>
+    </section>
+
+    <div id="result" class="notice" role="status" aria-live="polite" hidden></div>
+    <footer class="footer">Демонстрационный проект · Не отправляй через него конфиденциальные данные.</footer>
+  </main>
+
+  <script>
+    window.PUSH_DEMO = {
+      publicKey: "{{ vapid_public_key|escapejs }}",
+      subscribeUrl: "{% url 'push_subscribe' %}",
+      unsubscribeUrl: "{% url 'push_unsubscribe' %}",
+      sendUrl: "{% url 'push_send_test' %}"
+    };
+  </script>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

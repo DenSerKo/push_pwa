@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#172554">
+  <title>Вход — PWA Push Demo</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body class="page page-narrow">
+  <main class="panel">
+    <div class="brand-mark">P</div>
+    <h1>Вход в демо</h1>
+    <p class="muted">Войди под пользователем, созданным через createsuperuser.</p>
+    {% if form.errors %}<p class="notice error">Неверное имя пользователя или пароль.</p>{% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <label for="id_username">Имя пользователя</label>
+      {{ form.username }}
+      <label for="id_password">Пароль</label>
+      {{ form.password }}
+      <input type="hidden" name="next" value="{{ next }}">
+      <button type="submit" class="button primary full">Войти</button>
+    </form>
+  </main>
+</body>
+</html>
